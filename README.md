@@ -15,12 +15,17 @@ This project is a Web API and ASP.NET Core MVC application that uses a **MySQL d
 ---
 
 ##  Technologies Used
-- **ASP.NET Core MVC** (for the web application)
-- **ASP.NET Core Web API** (for RESTful services)
-- **Entity Framework Core** (for database interactions)
-- **MySQL** (as the database)
-- **C#** (backend logic)
-- **Razor Views** (server-side rendering)
+- MVC for ASP.NET Core (web application)
+- Web API for ASP.NET Core (for RESTful services)
+- Entity Framework Core (for databases)
+- MySQL
+- C#
 
+##  Install NuGet Packages
+- MySql.Data
+- MySql.Data.EntityFramwork
+- Microsoft.AspNet.WebApi.Cors
+- EntityFramework
+- 
 ---
 
