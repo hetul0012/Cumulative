@@ -1,0 +1,39 @@
+﻿
+﻿<div id="containershow">
+    <nav>
+        <a class="navlink" href="/CoursePage/List">Back To Courses</a>
+    </nav>
+    <h2>New Course</h2>
+    <form method="POST" action="/CoursePage/Create">
+        <div class="inputrow">
+            <label for="CourseId">Course Id:</label>
+            <input type="number" id="CourseId" name="CourseId" />
+        </div>
+ 
+        <div class="inputrow">
+            <label for="CourseCode">Course Code:</label>
+            <input type="text" id="CourseCode" name="CourseCode" />
+        </div>
+        <div class="inputrow">
+            <label for="TeacherId">Teacher Id:</label>
+            <input type="number" id="TeacherId" name="Teacherid" />
+        </div>
+
+        <div class="inputrow">
+            <label for="StartDate">Course Start Date:</label>
+            <input type="datetime" id="StartDate" name="EmployeeNumber" />
+        </div>
+        <div class="inputrow">
+            <label for="FinishDate">Finish Date:</label>
+            <input type="datetime" id="FinishDate" name="Finish Date" />
+        </div>
+         <div class="inputrow">
+            <label for="CourseName">Course Name:</label>
+            <input type="text" id="CourseName" name="Course Name" />
+        </div>
+
+        <div class="inputrow">
+            <input type="submit" value="Create Course" />
+        </div>
+    </form>
+</div>

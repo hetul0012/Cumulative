@@ -1,0 +1,12 @@
+﻿
+@model Cumulative_1.Models.Student
+
+<h1>Student all information</h1>
+
+
+<h1>@Model.StudentFName @Model.StudentLName</h1>
+<a href="/StudentPage/List">Back to List</a> <a class="alert-warning" href="/StudentPage/DeleteConfirm/@Model.StudentId">Delete</a>
+<p>@Model.StudentFName</p>
+<p>@Model.StudentLName</p>
+<p>@Model.StudentNumber</p>
+<p>@Model.EnrolDate.ToString("yyyy-M-d")</p>

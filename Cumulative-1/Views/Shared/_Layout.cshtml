@@ -28,13 +28,22 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Swagger" asp-action="Index">API</a>
                         </li>
+                        @* <li class="nav-item"> *@
+                        @*     <a class="nav-link text-dark" href="/TeacherPage/List">Teacher</a> *@
+                        @* </li> *@
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="/Teacher/List">Teacher</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="TeacherPage" asp-action="List">Teacher</a>
                         </li>
-                    
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/CoursePage/List">Course</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/StudentPage/List">Student</a>
+                        </li>
                     </ul>
                 </div>
-            </div>
+            </div>  
         </nav>
     </header>
     <div class="container">

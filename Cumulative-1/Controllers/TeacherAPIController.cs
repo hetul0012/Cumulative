@@ -1,9 +1,12 @@
 ﻿using Cumulative_1.Models;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Cumulative_1.Controllers
 {
+    [Route("api/Teacher")]
+    [ApiController]
     public class TeacherAPIController : Controller
     {
         private readonly SchoolDbContext _context;
@@ -22,11 +25,11 @@ namespace Cumulative_1.Controllers
         /// A list of strings, formatted "{First Name} {Last Name}"
         /// </returns>
         [HttpGet]
-        [Route(template: "ListTeacherNames")]
-        public List<string> ListTeacherNames()
+        [Route(template: "ListTeachers")]
+        public List<Teacher> ListTeachers(string SearchKey = null)
         {
             // Create an empty list of Teacher Names
-            List<string> TeacherNames = new List<string>();
+            List<Teacher> Teachers = new List<Teacher>();
 
 
             using (MySqlConnection Connection = _context.AccessDatabase())
@@ -36,30 +39,57 @@ namespace Cumulative_1.Controllers
                 MySqlCommand Command = Connection.CreateCommand();
 
                 //SQL QUERY
-                Command.CommandText = "select * from teachers";
+                //Command.CommandText = "select * from ";
+
+                string query = "select * from teachers";
+
+                // search criteria, first, last or first + last
+                if (SearchKey != null)
+                {
+                    query += " where lower(teacherfname) like lower(@key) or lower(teacherlname) like lower(@key) or lower(concat(teacherfname,' ',teacherlname)) like lower(@key)";
+                    Command.Parameters.AddWithValue("@key", $"%{SearchKey}%");
+                }
+                //SQL QUERY
+                Command.CommandText = query;
+                Command.Prepare();
+
 
                 // Gather Result Set of Query into a variable
                 using (MySqlDataReader ResultSet = Command.ExecuteReader())
                 {
                     //Loop Through Each Row the Result Set
+                
                     while (ResultSet.Read())
                     {
-
-                        string TeacherFName = ResultSet["teacherfname"].ToString();
-                        string TeacherLName = ResultSet["teacherlname"].ToString();
-
-
                         //Access Column information by the DB column name as an index
-                        string TeacherName = $"{TeacherFName} {TeacherLName}";
-                        //Add the Teacher Name to the List
-                        TeacherNames.Add(TeacherName);
+                        int Id = Convert.ToInt32(ResultSet["teacherid"]);
+                        string FirstName = ResultSet["teacherfname"].ToString();
+                        string LastName = ResultSet["teacherlname"].ToString();
+
+                        DateTime HireDate = Convert.ToDateTime(ResultSet["hiredate"]);
+                        decimal Salary = Convert.ToDecimal(ResultSet["salary"]);
+
+                        //short form for setting all properties while creating the object
+                        Teacher CurrentTeacher = new Teacher()
+                        {
+                            TeacherId = Id,
+                            TeacherFName = FirstName,
+                            TeacherLName = LastName,
+                            TeacherHireDate = HireDate,
+                            TeacherSalary = Salary
+
+                        };
+
+                        Teachers.Add(CurrentTeacher);
+
                     }
+
                 }
             }
 
 
             //Return the final list of Teacher names
-            return TeacherNames;
+            return Teachers;
         }
 
 
@@ -95,21 +125,22 @@ namespace Cumulative_1.Controllers
                     //Loop Through Each Row the Result Set
                     while (ResultSet.Read())
                     {
+
+                   
                         //Access Column information by the DB column name as an index
                         int Id = Convert.ToInt32(ResultSet["teacherid"]);
-                        string FirstName = ResultSet["teacherfname"].ToString();
-                        string LastName = ResultSet["teacherlname"].ToString();
-                        string Employeenumber = ResultSet["employeenumber"].ToString();
-                        DateTime TeacherhireDate = Convert.ToDateTime(ResultSet["hiredate"]);
-                        decimal TeacherSalary = Convert.ToDecimal(ResultSet["salary"]);
+                        string FirstName = ResultSet["teacherfname"]?.ToString() ?? "";
+                        string LastName = ResultSet["teacherlname"]?.ToString() ?? "";
+
+                        DateTime HireDate = Convert.ToDateTime(ResultSet["hiredate"]);
+                        decimal Salary = Convert.ToDecimal(ResultSet["salary"]);
 
 
                         SelectedTeacher.TeacherId = Id;
                         SelectedTeacher.TeacherFName = FirstName;
                         SelectedTeacher.TeacherLName = LastName;
-                        SelectedTeacher.EmployeeNumber = Employeenumber;
-                        SelectedTeacher.HireDate = TeacherhireDate;
-                        SelectedTeacher.Salary = TeacherSalary;
+                        SelectedTeacher.TeacherHireDate = HireDate;
+                        SelectedTeacher.TeacherSalary = Salary;
 
                     }
                 }
@@ -120,159 +151,84 @@ namespace Cumulative_1.Controllers
             return SelectedTeacher;
         }
 
-        /// <summary>
-        /// Returns All information of Teacher in the system
-        /// </summary>
-        /// <example>
-        /// GET /localhost:7044/ListTeacherAllData -> ["5 Jessica Morris T389 04-06-2012 12.00.00 AM 48.62"]
-        /// </example>
-        /// <returns>
-        /// A list of strings, formatted "{TeacherId} {TeacherFName} {TeacherLName} {Employeenumber} {Hiredate} {Salary}"
-        /// </returns>
 
-        [HttpGet]
-        [Route(template: "ListTeacherID")]
-        public List<Teacher> ListTeacherID()
+        // <summary>
+        // Adds an Teacher to the database
+        // </summary>
+        // <param name="TeacherData">Teacher Object</param>
+        // <example>
+        // POST: api/TeacherData/AddTeacher
+        // Headers: Content-Type: application/json
+        // Request Body:
+        // {
+        //      "TeacherId":"11",
+        //	    "TeacherFname":"Hetul",
+        //	    "TeacherLname":"Suthar",
+        //	    "EmployeeNumber":"T777",
+        //	    "TeacherHireDate":"2024-10-12 00:00:00",
+        // } -> 409
+        // </example>
+        // <returns>
+        // The inserted Teacher Id from the database if successful. 0 if Unsuccessful
+        // </returns>
+        [HttpPost(template: "AddTeacher")]
+        public int AddTeacher([FromBody] Teacher TeacherData)
         {
-            // Create an empty list of Teachers
-            List<Teacher> TeacherList = new List<Teacher>();
-
             // 'using' will close the connection after the code executes
             using (MySqlConnection Connection = _context.AccessDatabase())
             {
                 Connection.Open();
+                //Establish a new command (query) for our database
                 MySqlCommand Command = Connection.CreateCommand();
 
-                // SQL QUERY
-                Command.CommandText = "select * from teachers";
+                
+                Command.CommandText = "insert into teachers (teacherid, teacherfname, teacherlname, employeenumber, hiredate, salary) values (@teacherid, @teacherfname, @teacherlname, @employeenumber, CURRENT_DATE(), @salary)";
+                Command.Parameters.AddWithValue("@teacherid", TeacherData.TeacherId);
+                Command.Parameters.AddWithValue("@teacherfname", TeacherData.TeacherFName);
+                Command.Parameters.AddWithValue("@teacherlname", TeacherData.TeacherLName);
+                Command.Parameters.AddWithValue("@employeenumber", TeacherData.EmployeeNumber);
+                Command.Parameters.AddWithValue("@hiredate", TeacherData.TeacherHireDate);
+                Command.Parameters.AddWithValue("@salary", TeacherData.TeacherSalary);
 
-                // Gather Result Set of Query into a variable
-                using (MySqlDataReader ResultSet = Command.ExecuteReader())
-                {
-                    while (ResultSet.Read())
-                    {
-                        Teacher teacher = new Teacher
-                        {
-                            TeacherId = Convert.ToInt32(ResultSet["teacherid"]),
-                            TeacherFName = ResultSet["teacherfname"].ToString(),
-                            TeacherLName = ResultSet["teacherlname"].ToString(),
-                            EmployeeNumber = ResultSet["employeenumber"].ToString(),
-                            HireDate = Convert.ToDateTime(ResultSet["hiredate"]),
-                            Salary = Convert.ToDecimal(ResultSet["salary"])
-                        };
+                Command.ExecuteNonQuery();
 
-                        // Add the teacher object to the list
-                        TeacherList.Add(teacher);
-                    }
-                }
+                return Convert.ToInt32(Command.LastInsertedId);
+
             }
-
-            // Return the final list of teachers
-            return TeacherList;
+            // if failure
+            return 0;
         }
 
 
-        /// <summary>
-        /// Returns a list of Students in the system
-        /// </summary>
-        /// <example>
-        /// GET /localhost:7044/ListStudent -> ["Sarah Sarah","Jennifer Faulkner",..]
-        /// </example>
-        /// <returns>
-        /// A list of strings, formatted "{First Name} {Last Name}"
-        /// </returns>
-        [HttpGet]
-        [Route(template: "ListStudents")]
-        public List<string> ListStudents()
+        // <summary>
+        // Deletes an Teacher from the database
+        // </summary>
+        // <param name="TeacherId">Primary key of the teacher to delete</param>
+        // <example>
+        // DELETE: api/TeacherData/DeleteTeacher -> 1
+        // </example
+        // <returns>
+        // Number of rows affected by delete operation.
+        // </returns>
+        [HttpDelete(template: "DeleteTeacher/{TeacherId}")]
+        public int DeleteTeacher(int TeacherId)
         {
-            // Create an empty list of Student Names
-            List<string> StudentNames = new List<string>();
-
-
-            using (MySqlConnection Connection = _context.AccessDatabase())
-            {
-                Connection.Open();
-
-                MySqlCommand Command = Connection.CreateCommand();
-
-                //SQL QUERY
-                Command.CommandText = "select * from students";
-
-                // Gather Result Set of Query into a variable
-                using (MySqlDataReader ResultSet = Command.ExecuteReader())
-                {
-                    //Loop Through Each Row the Result Set
-                    while (ResultSet.Read())
-                    {
-
-                        string StudentFName = ResultSet["studentfname"].ToString();
-                        string StudentLName = ResultSet["studentlname"].ToString();
-
-
-                        //Access Column information by the DB column name as an index
-                        string StudentName = $"{StudentFName} {StudentLName}";
-                        //Add the Student Name to the List
-                        StudentNames.Add(StudentName);
-                    }
-                }
-            }
-
-
-            //Return the final list of Students names
-            return StudentNames;
-        }
-
-
-        /// <summary>
-        /// Returns a list of Courses in the system
-        /// </summary>
-        /// <example>
-        /// GET /localhost:7044/ListCourses -> ["1","http5101","Web Application Development"]
-        /// </example>
-        /// <returns>
-        /// A list of strings, formatted "{CourseId} {CourseCode} {CourseName}"
-        /// </returns>
-
-
-        [HttpGet]
-        [Route(template: "ListCourse")]
-        public List<Course> ListCourse()
-        {
-            // Create an empty list of Teachers
-            List<Course> CourseList = new List<Course>();
-
             // 'using' will close the connection after the code executes
             using (MySqlConnection Connection = _context.AccessDatabase())
             {
                 Connection.Open();
+                //Establish a new command (query) for our database
                 MySqlCommand Command = Connection.CreateCommand();
 
-                // SQL QUERY
-                Command.CommandText = "select * from courses";
 
-                // Gather Result Set of Query into a variable
-                using (MySqlDataReader ResultSet = Command.ExecuteReader())
-                {
-                    while (ResultSet.Read())
-                    {
-                        Course course = new Course
-                        {
-                            CourseId = Convert.ToInt32(ResultSet["courseid"]),
-                            CourseCode = ResultSet["coursecode"].ToString(),
-                            CourseName = ResultSet["coursename"].ToString(),
-   
-                        };
+                Command.CommandText = "delete from teachers where teacherid=@id";
+                Command.Parameters.AddWithValue("@id", TeacherId);
+                return Command.ExecuteNonQuery();
 
-                        // Add the Course object to the list
-                        CourseList.Add(course);
-                    }
-                }
             }
-
-            // Return the final list of Course
-            return CourseList;
+            // if failure
+            return 0;
         }
-
 
     }
 }

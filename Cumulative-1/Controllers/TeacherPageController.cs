@@ -17,14 +17,15 @@ namespace Cumulative_1.Controllers
 
         // GET: /TeacherPage/List -> A webpage which shows all teachers in the system
         [HttpGet]
-        public IActionResult List()
+        public IActionResult List(string SearchKey)
         {
             // get this information from the API
-            List<Teacher> TeacherList = _api.ListTeacherID(); // Assuming ListTeacherNames method returns a list of Teacher objects
+            List<Teacher> Teachers = _api.ListTeachers(SearchKey); // Assuming ListTeacherNames method returns a list of Teacher objects
 
             // Return the list of teachers to the View
-            return View(TeacherList);
+            return View(Teachers);
         }
+
 
         // GET: /TeacherPage/Show/{id} -> A webpage which shows one specific teacher by its id
         [HttpGet]
@@ -36,5 +37,42 @@ namespace Cumulative_1.Controllers
             // Return the teacher details to the View
             return View(SelectedTeacher);
         }
+
+
+        // GET : TeacherPage/New
+        [HttpGet]
+        public IActionResult New(int id)
+        {
+            return View();
+        }
+
+        // POST: TeacherPage/Create
+        [HttpPost]
+        public IActionResult Create(Teacher NewTeacher)
+        {
+            int TeacherId = _api.AddTeacher(NewTeacher);
+
+            // redirects to "Show" action on "Teacher" cotroller with id parameter supplied
+            return RedirectToAction("Show", new { id = TeacherId });
+        }
+
+        // GET : TeacherPage/DeleteConfirm/{id}
+        [HttpGet]
+        public IActionResult DeleteConfirm(int id)
+        {
+            Teacher SelectedTeacher = _api.FindTeacher(id);
+            return View(SelectedTeacher);
+        }
+
+        // POST: TeacherPage/Delete/{id}
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            int TeacherId = _api.DeleteTeacher(id);
+            // redirects to list action
+            return RedirectToAction("List");
+        }
+
+
     }
 }
