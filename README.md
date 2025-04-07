@@ -12,6 +12,7 @@ This project is a Web API and ASP.NET Core MVC application that uses a **MySQL d
 - **View Course Details**
 - **Read functionality for Students**
 - **Read functionality for Courses**
+- **Read functionality for Teacher**
 - **Adds functionality for Teacher**
 - **Adds functionality for Course**
 - **Adds functionality for Student**
