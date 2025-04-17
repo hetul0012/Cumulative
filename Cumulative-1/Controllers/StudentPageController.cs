@@ -69,5 +69,32 @@ namespace Cumulative_1.Controllers
             // redirects to list action
             return RedirectToAction("List");
         }
+
+        // GET : StudentPage/Edit/{id}
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            Student SelectedStudent = _api.FindStudent(id);
+            return View(SelectedStudent);
+        }
+
+
+        // POST: StudentPage/Update/{id}
+        [HttpPost]
+        public IActionResult Update(int id, string StudentFName, string StudentLName, string StudentNumber, DateTime EnrolDate)
+        {
+            Student UpdatedStudent = new Student();
+            UpdatedStudent.StudentFName = StudentFName;
+            UpdatedStudent.StudentLName = StudentLName;
+            UpdatedStudent.StudentNumber = StudentNumber;
+            UpdatedStudent.EnrolDate = EnrolDate;
+        
+
+            // not doing anything with the response
+            _api.UpdateStudent(id, UpdatedStudent);
+            // redirects to show Student
+            return RedirectToAction("Show", new { id = id });
+        }
+
     }
 }

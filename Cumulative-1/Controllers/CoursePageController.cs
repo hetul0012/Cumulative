@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
 using Cumulative_1.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Cumulative_1.Controllers
 {
@@ -71,6 +72,36 @@ namespace Cumulative_1.Controllers
             return RedirectToAction("List");
         }
 
+
+        // GET : CoursePage/Edit/{id}
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            Course SelectedCourse = _api.FindCourse(id);
+            return View(SelectedCourse);
+        }
+
+
+        // POST: CoursePage/Update/{id}
+        [HttpPost]
+        public IActionResult Update(int id, string CourseCode, int TeacherId, DateTime CourseStartDate, DateTime CourseFinishDate, string CourseName)
+        {
+            Course UpdatedCourse = new Course();
+            UpdatedCourse.CourseCode = CourseCode;
+            UpdatedCourse.TeacherId = TeacherId;
+            UpdatedCourse.CourseStartDate = CourseStartDate;
+            UpdatedCourse.CourseFinishDate = CourseFinishDate;
+            UpdatedCourse.CourseName = CourseName;
+
+
+       
+
+
+            // not doing anything with the response
+            _api.UpdateCourse(id, UpdatedCourse);
+            // redirects to show Course
+            return RedirectToAction("Show", new { id = id });
+        }
 
     }
 }

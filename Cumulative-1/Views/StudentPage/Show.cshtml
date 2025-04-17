@@ -5,7 +5,15 @@
 
 
 <h1>@Model.StudentFName @Model.StudentLName</h1>
-<a href="/StudentPage/List">Back to List</a> <a class="alert-warning" href="/StudentPage/DeleteConfirm/@Model.StudentId">Delete</a>
+
+
+<nav>
+    <a href="/StudentPage/List">Back to List</a>
+    <a class="alert-warning" href="/StudentPage/DeleteConfirm/@Model.StudentId">Delete</a>
+    <a href="/StudentPage/Edit/@Model.StudentId">Edit</a>
+</nav>
+
+
 <p>@Model.StudentFName</p>
 <p>@Model.StudentLName</p>
 <p>@Model.StudentNumber</p>

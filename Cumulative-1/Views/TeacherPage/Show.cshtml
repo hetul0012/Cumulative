@@ -5,6 +5,13 @@
 
 
 <h1>@Model.TeacherFName @Model.TeacherLName</h1>
-<a href="/TeacherPage/List">Back to List</a> <a class="alert-warning" href="/TeacherPage/DeleteConfirm/@Model.TeacherId">Delete</a>
+
+<nav>
+    <a href="/TeacherPage/List">Back to List</a>
+    <a class="alert-warning" href="/TeacherPage/DeleteConfirm/@Model.TeacherId">Delete</a>
+    <a href="/TeacherPage/Edit/@Model.TeacherId">Edit</a>
+</nav>
+
+
 <p>@Model.TeacherHireDate.ToString("yyyy-M-d")</p>
 <p>@Model.TeacherSalary</p>

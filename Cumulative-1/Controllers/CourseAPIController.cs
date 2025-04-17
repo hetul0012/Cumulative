@@ -205,5 +205,59 @@ namespace Cumulative_1.Controllers
             // if failure
             return 0;
         }
+
+
+        // <summary>
+        // Updates an Course in the database. Data is Course object, request query contains ID
+        // </summary>
+        // <param name="CourseData">Course Object</param>
+        // <param name="CourseId">The Course ID primary key</param>
+        // <example>
+        // PUT: api/Course/UpdateCourse/4
+        // Headers: Content-Type: application/json
+        // Request Body:
+        // {
+        //      "CourseId":"112",
+        //	    "CourseCode":"htpp5400",
+        //	    "TeacherId":"15",
+        //	    "StartDate":"2023-06-03",
+        //	    "FinishDate":"2024-12-12",
+        // } -> 
+
+        // </example>
+        // <returns>
+        // The updated Course object
+        // </returns>
+        [HttpPut(template: "UpdateCourse/{CourseId}")]
+        public Course UpdateCourse(int CourseId, [FromBody] Course CourseData)
+        {
+            // 'using' will close the connection after the code executes
+            using (MySqlConnection Connection = _context.AccessDatabase())
+            {
+                Connection.Open();
+                //Establish a new command (query) for our database
+                MySqlCommand Command = Connection.CreateCommand();
+
+                // parameterize query
+
+                Command.CommandText = "update courses set coursecode=@coursecode, teacherid=@teacherid, startdate=@startdate, finishdate=@finishdate , coursename=@coursename where courseid=@id";
+            
+                Command.Parameters.AddWithValue("@courseid", CourseData.CourseId);
+                Command.Parameters.AddWithValue("@coursecode", CourseData.CourseCode);
+                Command.Parameters.AddWithValue("@teacherid", CourseData.TeacherId);
+                Command.Parameters.AddWithValue("@startdate", CourseData.CourseStartDate);
+                Command.Parameters.AddWithValue("@finishdate", CourseData.CourseFinishDate);
+                Command.Parameters.AddWithValue("@coursename", CourseData.CourseName);
+
+                Command.Parameters.AddWithValue("@id", CourseId);
+
+                Command.ExecuteNonQuery();
+
+            }
+
+            return FindCourse(CourseId);
+        }
+
+
     }
 }

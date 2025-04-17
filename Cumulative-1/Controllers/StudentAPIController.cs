@@ -202,5 +202,60 @@ namespace Cumulative_1.Controllers
             // if failure
             return 0;
         }
+
+        // <summary>
+        // Updates an Student in the database. Data is Student object, request query contains ID
+        // </summary>
+        // <param name="StudentData">Student Object</param>
+        // <param name="StudentId">The Student ID primary key</param>
+        // <example>
+        // PUT: api/Student/UpdateStudent/2
+        // Headers: Content-Type: application/json
+        // Request Body:
+        // {
+        //	    "StudentFName":"Hetul",
+        //	    "StudentLName":"Suthar", 
+        // } -> 
+        // {
+        //     "StudentId":2,
+        //	    "StudentFName":"Milin",
+        //	    "StudentLName":"Suthar",
+        //	    "StudentNumber":"N1777",
+        //	    "EnrolDate":"2023-10-02"
+        // }
+        // </example>
+        // <returns>
+        // The updated Student object
+        // </returns>
+        [HttpPut(template: "UpdateStudent/{StudentId}")]
+        public Student UpdateStudent(int StudentId, [FromBody] Student StudentData)
+        {
+            // 'using' will close the connection after the code executes
+            using (MySqlConnection Connection = _context.AccessDatabase())
+            {
+                Connection.Open();
+                //Establish a new command (query) for our database
+                MySqlCommand Command = Connection.CreateCommand();
+
+                // parameterize query
+
+                Command.CommandText = "update students set studentfname=@studentfname, studentlname=@studentlname, studentnumber=@studentnumber, enroldate=@enroldate where studentid=@id";
+          
+                Command.Parameters.AddWithValue("@studentid", StudentData.StudentId);
+                Command.Parameters.AddWithValue("@studentfname", StudentData.StudentFName);
+                Command.Parameters.AddWithValue("@studentlname", StudentData.StudentLName);
+                Command.Parameters.AddWithValue("@studentnumber", StudentData.StudentNumber);
+                Command.Parameters.AddWithValue("@enroldate", StudentData.EnrolDate);
+
+
+                Command.Parameters.AddWithValue("@id", StudentId);
+
+                Command.ExecuteNonQuery();
+
+            }
+
+            return FindStudent(StudentId);
+        }
+
     }
 }
