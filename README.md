@@ -1,4 +1,4 @@
-# Cumulative-1: ASP.NET Core Web Application
+# Cumulative: ASP.NET Core Web Application
 
 ## Project Overview
 This project is a Web API and ASP.NET Core MVC application that uses a **MySQL database** to manage instructor data.  
@@ -8,9 +8,19 @@ This project is a Web API and ASP.NET Core MVC application that uses a **MySQL d
 ##  Features
 - **View All Teachers First And Last Name**
 - **View Teacher Details**
+- **View Students Details**
+- **View Course Details**
 - **Read functionality for Students**
 - **Read functionality for Courses**
-  
+- **Read functionality for Teacher**
+- **Adds functionality for Teacher**
+- **Adds functionality for Course**
+- **Adds functionality for Student**
+- **deletes functionality for Teacher**
+- **deletes functionality for Course**
+- **deletes functionality for Student**
+
+
 
 ---
 
