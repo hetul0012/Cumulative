@@ -19,7 +19,10 @@ This project is a Web API and ASP.NET Core MVC application that uses a **MySQL d
 - **deletes functionality for Teacher**
 - **deletes functionality for Course**
 - **deletes functionality for Student**
-
+- **Update functionality for Teacher**
+- **Update functionality for Course**
+- **Update functionality for Student**
+- **Use JS and AJAX to Update a Teacher**
 
 
 ---
